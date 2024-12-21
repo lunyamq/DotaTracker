@@ -1,0 +1,461 @@
+<xmlWrapper>
+   <records class="java.util.ArrayList">
+      <historyEntity>
+         <creationDate>2024-12-19 23:19:20.484 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putMatchPlayers()</methodName>
+         <message class="java.lang.String">Saved players for match</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:19:19.102 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putMatch()</methodName>
+         <message class="java.lang.String">Saved match by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:19:22.245 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>getMatchPlayers()</methodName>
+         <message class="java.lang.String">Receive players from match</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:21:26.9 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">JSONObject[&quot;profile.account_id&quot;] not found.</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:21:43.509 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">JSONObject[&quot;account_id&quot;] not found.</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:22:40.697 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">JSONObject[&quot;win&quot;] not found.</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:24:02.423 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">JSONObject[&quot;win&quot;] not found.</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:25:53.887 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;rank, wins, losses, hasPlus, pings, rapiers,
+    observers, sentries, towerDmg, &apos; at line 2</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:26:45.919 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Cannot add or update a child row: a foreign key constraint fails (`dotatracker`.`players`, CONSTRAINT `players_ibfk_1` FOREIGN KEY (`id`) REFERENCES `match_players` (`player_id`) ON DELETE CASCADE)</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:27:15.336 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Cannot add or update a child row: a foreign key constraint fails (`dotatracker`.`players`, CONSTRAINT `players_ibfk_1` FOREIGN KEY (`id`) REFERENCES `match_players` (`player_id`) ON DELETE CASCADE)</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:31:20.89 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Cannot add or update a child row: a foreign key constraint fails (`dotatracker`.`players`, CONSTRAINT `players_ibfk_1` FOREIGN KEY (`id`) REFERENCES `match_players` (`player_id`) ON DELETE CASCADE)</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:32:17.503 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:32:54.698 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:34:05.851 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:48:21.951 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:55:19.147 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:56:31.187 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:57:06.493 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:57:33.732 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:57:59.645 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-19 23:58:15.553 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:00:37.549 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:00:54.950 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:01:43.211 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:03:18.585 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:03:29.419 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:05:07.81 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:07:54.527 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:09:31.488 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:14:58.506 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:16:57.331 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">JSONObject[&quot;win&quot;] not found.</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:18:29.357 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:20:30.222 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:23:07.238 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:39:23.838 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">JSONObject[&quot;fields&quot;] not found.</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:39:54.177 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:42:44.265 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:53:21.175 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:53:44.356 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:57:02.987 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">playerDataChat is null</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:57:30.94 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">JSONObject[&quot;my_word_counts&quot;] is not a string (class org.json.JSONObject).</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:58:19.417 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Data truncation: Data too long for column &apos;wordCount&apos; at row 1</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 00:59:43.550 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &apos;&apos; at line 16</message>
+         <status>FAIL</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:00:36.58 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:04:15.402 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:04:32.260 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:04:35.807 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:04:38.518 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:04:44.883 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:05:01.189 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:05:17.655 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:05:20.852 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:05:25.584 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putPlayer()</methodName>
+         <message class="java.lang.String">Saved player by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:04:14.432 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putMatchPlayers()</methodName>
+         <message class="java.lang.String">Saved players for match</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:04:12.127 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>putMatch()</methodName>
+         <message class="java.lang.String">Saved match by id</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:05:30.251 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>getMatchPlayers()</methodName>
+         <message class="java.lang.String">Receive players from match</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+      <historyEntity>
+         <creationDate>2024-12-20 01:05:46.586 MSK</creationDate>
+         <className>SqlDatabaseClient</className>
+         <methodName>getMatchPlayers()</methodName>
+         <message class="java.lang.String">Receive players from match</message>
+         <status>SUCCESS</status>
+         <actor>system</actor>
+      </historyEntity>
+   </records>
+</xmlWrapper>
