@@ -11,7 +11,6 @@ import ru.sfedu.project.utils.DatabaseUtil;
 
 import java.sql.*;
 import java.util.Date;
-import java.util.Objects;
 
 public class SqlDatabaseClient {
     private static Connection database;
@@ -21,68 +20,14 @@ public class SqlDatabaseClient {
 
     static {
         try {
-                String createTableSQL = """
-                    CREATE TABLE IF NOT EXISTS matches (
-                        id BIGINT PRIMARY KEY,
-                        duration INT DEFAULT 0,
-                        firstBlood INT DEFAULT 0,
-                        radiantScore INT DEFAULT 0,
-                        direScore INT DEFAULT 0,
-                        radiantWin BOOLEAN DEFAULT FALSE,
-                        chat TEXT,
-                        demoLink VARCHAR(255) DEFAULT NULL,
-                        matchDate DATETIME DEFAULT NULL
-                    );
-                    """;
+                String createTableSQL = Constants.SQL_MATCHES_TABLE;
                 Statement stmt = getDatabase().createStatement();
                 stmt.executeUpdate(createTableSQL);
 
-    //            createTableSQL = """
-    //            CREATE TABLE IF NOT EXISTS match_heroes (
-    //                hero_id INT NOT NULL,
-    //                hero_name VARCHAR(255) DEFAULT NULL,
-    //                match_id BIGINT NOT NULL,
-    //                isRadiant BOOLEAN,
-    //                PRIMARY KEY (hero_id, match_id),
-    //                FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE
-    //            );
-    //            """;
-    //            stmt.executeUpdate(createTableSQL);
-
-                createTableSQL = """
-                CREATE TABLE IF NOT EXISTS players (
-                    id BIGINT PRIMARY KEY,
-                    name VARCHAR(255) DEFAULT NULL,
-                    rang VARCHAR(50) DEFAULT NULL,
-                    wins INT DEFAULT 0,
-                    losses INT DEFAULT 0,
-                    hasPlus VARCHAR(6) DEFAULT NULL,
-                    pings INT DEFAULT 0,
-                    rapiers INT DEFAULT 0,
-                    observers INT DEFAULT 0,
-                    sentries INT DEFAULT 0,
-                    towerDmg BIGINT DEFAULT 0,
-                    heroDmg BIGINT DEFAULT 0
-                );
-                """;
+                createTableSQL = Constants.SQL_PLAYERS_TABLE;
                 stmt.executeUpdate(createTableSQL);
 
-                createTableSQL = """
-                    CREATE TABLE IF NOT EXISTS match_players (
-                        player_id BIGINT NOT NULL,
-                        match_id BIGINT NOT NULL,
-                        player_name VARCHAR(255) DEFAULT NULL,
-                        hero_id INT DEFAULT 0,
-                        hero_name VARCHAR(255) DEFAULT NULL,
-                        is_radiant BOOLEAN DEFAULT FALSE,
-                        kills INT DEFAULT 0,
-                        deaths INT DEFAULT 0,
-                        assists INT DEFAULT 0,
-                        PRIMARY KEY (player_id, match_id),
-                        FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE,
-                        FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE CASCADE
-                    );
-                    """;
+                createTableSQL = Constants.SQL_MATCH_PLAYERS_TABLE;
                 stmt.executeUpdate(createTableSQL);
                 stmt.close();
 
@@ -124,48 +69,26 @@ public class SqlDatabaseClient {
 
         try {
             JSONObject matchData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_MATCHES + matchId);
-            if (matchData == null) {
-                log.error("Empty response: no matchData found");
-                historyEntity.setStatus(HistoryEntity.Status.FAIL);
-                historyEntity.setMessage("Empty response: no match found");
-                DatabaseUtil.save(historyEntity);
-                throw new IllegalArgumentException("Match data is null");
-            }
-
             JSONObject heroesJson = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_HEROES);
-            if (heroesJson == null) {
-                log.error("Heroes data is null in putMatchHeroes");
-                throw new IllegalArgumentException("Heroes data is null");
+
+            if (matchData == null || heroesJson == null) {
+                log.error("Empty JSON response: no matchData or heroesJson found");
+                throw new IllegalArgumentException("matchData or heroesJson is null");
             }
 
-            JSONArray playersData = matchData.getJSONArray("players");
-            String query = """
-                        INSERT INTO match_players (
-                            player_id, match_id, player_name, hero_id, hero_name, is_radiant, kills, deaths, assists
-                        )
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        ON DUPLICATE KEY UPDATE
-                            player_name = VALUES(player_name),
-                            hero_id = VALUES(hero_id),
-                            hero_name = VALUES(hero_name),
-                            kills = VALUES(kills),
-                            deaths = VALUES(deaths),
-                            assists = VALUES(assists);
-                    """;
-
+            JSONArray playersData = matchData.getJSONArray(Constants.JSON_PLAYER);
+            String query = Constants.SQL_MATCH_PLAYERS_INSERT;
             for (int i = 0; i < playersData.length(); i++) {
                 JSONObject playerData = playersData.getJSONObject(i);
-                if (playerData.has("account_id")) {
-                    long playerId = playerData.getLong("account_id");
-                    String playerName = playerData.optString("personaname");
-                    int heroId = playerData.getInt("hero_id");
+                if (playerData.has(Constants.JSON_ACCOUNT)) {
+                    long playerId = playerData.getLong(Constants.JSON_ACCOUNT);
+                    String playerName = playerData.optString(Constants.JSON_NAME);
+                    int heroId = playerData.getInt(Constants.JSON_HERO);
                     String heroName = heroesJson.getJSONObject(String.valueOf(heroId)).getString(Constants.MONGO_DB_HEROES_FIELDS[0]);
-                    boolean isRadiant = playerData.getBoolean("isRadiant");
-                    int kills = playerData.getInt("kills");
-                    int deaths = playerData.getInt("deaths");
-                    int assists = playerData.getInt("assists");
-
-                    putPlayer(String.valueOf(playerId));
+                    boolean isRadiant = playerData.getBoolean(Constants.JSON_TEAM);
+                    int kills = playerData.getInt(Constants.JSON_KDA[0]);
+                    int deaths = playerData.getInt(Constants.JSON_KDA[1]);
+                    int assists = playerData.getInt(Constants.JSON_KDA[2]);
 
                     try (PreparedStatement preparedStatement = getDatabase().prepareStatement(query)) {
                         preparedStatement.setLong(1, playerId);
@@ -179,7 +102,6 @@ public class SqlDatabaseClient {
                         preparedStatement.setInt(9, assists);
 
                         preparedStatement.executeUpdate();
-
                     }
                 }
             }
@@ -204,7 +126,7 @@ public class SqlDatabaseClient {
                 Constants.ACTOR_SYSTEM
         );
 
-        String query = "SELECT * FROM match_players WHERE match_id = ?";
+        String query = Constants.SQL_MATCH_PLAYERS_SELECT;
         JSONArray playersData = new JSONArray();
 
         try (PreparedStatement stmt = getDatabase().prepareStatement(query)) {
@@ -216,21 +138,21 @@ public class SqlDatabaseClient {
 
                 resultSet = stmt.executeQuery();
                 if (!resultSet.next()) {
-                    log.error("MatchPlayers find error");
-                    throw new RuntimeException("Failed to find match data");
+                    log.error("Empty JSON response: no resultSet found");
+                    throw new RuntimeException("resultSet is null");
                 }
             }
 
             while (resultSet.next()) {
                 JSONObject player = new JSONObject();
-                player.put("player_id", resultSet.getLong("player_id"));
-                player.put("player_name", resultSet.getString("player_name"));
-                player.put("hero_id", resultSet.getInt("hero_id"));
-                player.put("hero_name", resultSet.getString("hero_name"));
-                player.put("is_radiant", resultSet.getBoolean("is_radiant"));
-                player.put("kills", resultSet.getInt("kills"));
-                player.put("deaths", resultSet.getInt("deaths"));
-                player.put("assists", resultSet.getInt("assists"));
+                player.put(Constants.JSON_PLAYER_ID, resultSet.getLong(Constants.JSON_PLAYER_ID));
+                player.put(Constants.JSON_PLAYER_NAME, resultSet.getString(Constants.JSON_PLAYER_NAME));
+                player.put(Constants.JSON_HERO, resultSet.getInt(Constants.JSON_HERO));
+                player.put(Constants.JSON_HERO_NAME, resultSet.getString(Constants.JSON_HERO_NAME));
+                player.put(Constants.JSON_IS_RADIANT, resultSet.getBoolean(Constants.JSON_IS_RADIANT));
+                player.put(Constants.JSON_KDA[0], resultSet.getInt(Constants.JSON_KDA[0]));
+                player.put(Constants.JSON_KDA[1], resultSet.getInt(Constants.JSON_KDA[1]));
+                player.put(Constants.JSON_KDA[2], resultSet.getInt(Constants.JSON_KDA[2]));
 
                 playersData.put(player);
             }
@@ -242,124 +164,10 @@ public class SqlDatabaseClient {
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
             log.error("Error in getMatchPlayers method: {}", e.getMessage());
+
             return null;
         }
     }
-
-//    private static void putMatchHeroes(String matchId) throws Exception {
-//        HistoryEntity historyEntity = new HistoryEntity(
-//                new Date(),
-//                "SqlDatabaseClient",
-//                "putMatchHeroes()",
-//                "Saved heroes data for match",
-//                HistoryEntity.Status.SUCCESS,
-//                Constants.ACTOR_SYSTEM
-//        );
-//
-//        try {
-//            JSONObject matchData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_MATCHES + matchId);
-//            if (matchData == null) {
-//                log.error("MatchData is null in putMatchHeroes");
-//                throw new IllegalArgumentException("MatchData is null");
-//            }
-//
-//            JSONArray playersData = matchData.getJSONArray("players");
-//            JSONObject heroesJson = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_HEROES);
-//            if (heroesJson == null) {
-//                log.error("Heroes data is null in putMatchHeroes");
-//                throw new IllegalArgumentException("Heroes data is null");
-//            }
-//
-//            String query = """
-//            INSERT INTO match_heroes (hero_id, hero_name, match_id, isRadiant)
-//            VALUES (?, ?, ?, ?)
-//            ON DUPLICATE KEY UPDATE
-//                hero_name = VALUES(hero_name),
-//                isRadiant = VALUES(isRadiant);
-//            """;
-//
-//            try (PreparedStatement stmt = getDatabase().prepareStatement(query)) {
-//
-//                for (int i = 0; i < playersData.length(); i++) {
-//                    JSONObject playerData = playersData.getJSONObject(i);
-//                    if (playerData.has("hero_id")) {
-//                        int heroId = playerData.getInt("hero_id");
-//                        boolean isRadiant = playerData.getBoolean("isRadiant");
-//                        JSONObject heroData = heroesJson.getJSONObject(String.valueOf(heroId));
-//                        String heroName = heroData.getString(Constants.MONGO_DB_HEROES_FIELDS[0]);
-//
-//                        stmt.setInt(1, heroId);
-//                        stmt.setString(2, heroName);
-//                        stmt.setLong(3, Long.parseLong(matchId));
-//                        stmt.setBoolean(4, isRadiant);
-//
-//                        stmt.executeUpdate();
-//                    }
-//                }
-//            }
-//
-//            DatabaseUtil.save(historyEntity);
-//            log.info("Heroes data for match saved successfully");
-//        } catch (Exception e) {
-//            historyEntity.setStatus(HistoryEntity.Status.FAIL);
-//            historyEntity.setMessage(e.getMessage());
-//            DatabaseUtil.save(historyEntity);
-//
-//            log.error("Error in putMatchHeroes method: {}", e.getMessage());
-//        }
-//    }
-
-//    private static JSONArray getMatchHeroes(String matchId) throws Exception {
-//        HistoryEntity historyEntity = new HistoryEntity(
-//                new Date(),
-//                "SqlDatabaseClient",
-//                "getMatchHeroes()",
-//                "Receive heroes data for match",
-//                HistoryEntity.Status.SUCCESS,
-//                Constants.ACTOR_SYSTEM
-//        );
-//
-//        String checkQuery = """
-//            SELECT hero_id, hero_name, isRadiant
-//            FROM match_heroes
-//            WHERE match_id = ?
-//            """;
-//
-//        JSONArray heroesArray = new JSONArray();
-//        try (PreparedStatement checkStmt = getDatabase().prepareStatement(checkQuery)) {
-//            checkStmt.setLong(1, Long.parseLong(matchId));
-//            var resultSet = checkStmt.executeQuery();
-//
-//            if (!resultSet.next()) {
-//                putMatchHeroes(matchId);
-//
-//                resultSet = checkStmt.executeQuery();
-//                if (!resultSet.next()) {
-//                    log.error("MatchHeroes find error");
-//                    throw new RuntimeException("Failed to find match data");
-//                }
-//            }
-//
-//            while (resultSet.next()) {
-//                JSONObject heroData = new JSONObject();
-//                heroData.put("hero_id", resultSet.getInt("hero_id"));
-//                heroData.put("hero_name", resultSet.getString("hero_name"));
-//                heroData.put("isRadiant", resultSet.getBoolean("isRadiant"));
-//
-//                heroesArray.put(heroData);
-//            }
-//
-//            DatabaseUtil.save(historyEntity);
-//            return heroesArray;
-//        } catch (Exception e) {
-//            historyEntity.setStatus(HistoryEntity.Status.FAIL);
-//            historyEntity.setMessage(e.getMessage());
-//            DatabaseUtil.save(historyEntity);
-//
-//            log.error("Error in getMatchHeroes method: {}", e.getMessage());
-//            return null;
-//        }
-//    }
 
     private static void putMatch(String matchId) throws Exception {
         HistoryEntity historyEntity = new HistoryEntity(
@@ -374,34 +182,21 @@ public class SqlDatabaseClient {
         try {
             JSONObject matchData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_MATCHES + matchId);
             if (matchData == null) {
-                log.error("MatchData is null");
-                throw new IllegalArgumentException("MatchData is null");
+                log.error("Empty JSON response: no matchData found");
+                throw new IllegalArgumentException("matchData is null");
             }
 
-            long id = matchData.getLong("match_id");
-            int duration = matchData.getInt("duration");
-            int firstBlood = matchData.getInt("first_blood_time");
-            int radiantScore = matchData.getInt("radiant_score");
-            int direScore = matchData.getInt("dire_score");
-            boolean isRadiantWin = matchData.getBoolean("radiant_win");
-            String chat = matchData.has("chat") ? matchData.getJSONArray("chat").toString() : null;
-            String demoLink = matchData.has("replay_url") ? matchData.optString("replay_url") : null;
-            long matchDate = matchData.getLong("start_time");
+            long id = matchData.getLong(Constants.JSON_MATCH);
+            int duration = matchData.getInt(Constants.JSON_DURATION);
+            int firstBlood = matchData.getInt(Constants.JSON_FB);
+            int radiantScore = matchData.getInt(Constants.JSON_SCORE[0]);
+            int direScore = matchData.getInt(Constants.JSON_SCORE[1]);
+            boolean isRadiantWin = matchData.getBoolean(Constants.JSON_WINNER);
+            String chat = matchData.has(Constants.JSON_CHAT) ? matchData.getJSONArray(Constants.JSON_CHAT).toString() : null;
+            String demoLink = matchData.has(Constants.JSON_REPLAY) ? matchData.optString(Constants.JSON_REPLAY) : null;
+            long matchDate = matchData.getLong(Constants.JSON_START);
 
-            String query = """
-                INSERT INTO matches (id, duration, firstBlood, radiantScore, direScore,
-                radiantWin, chat, demoLink, matchDate)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))
-                ON DUPLICATE KEY UPDATE
-                duration = VALUES(duration),
-                firstBlood = VALUES(firstBlood),
-                radiantScore = VALUES(radiantScore),
-                direScore = VALUES(direScore),
-                radiantWin = VALUES(radiantWin),
-                chat = VALUES(chat),
-                demoLink = VALUES(demoLink),
-                matchDate = VALUES(matchDate);
-                """;
+            String query = Constants.SQL_MATCHES_INSERT;
             try (PreparedStatement preparedStatement = getDatabase().prepareStatement(query)) {
                 preparedStatement.setLong(1, id);
                 preparedStatement.setInt(2, duration);
@@ -437,7 +232,7 @@ public class SqlDatabaseClient {
                 Constants.ACTOR_SYSTEM
         );
 
-        String checkQuery = "SELECT * FROM matches WHERE id = ?";
+        String checkQuery = Constants.SQL_MATCH_SELECT;
         try (PreparedStatement checkStmt = getDatabase().prepareStatement(checkQuery)) {
             checkStmt.setLong(1, Long.parseLong(matchId));
             var resultSet = checkStmt.executeQuery();
@@ -447,21 +242,21 @@ public class SqlDatabaseClient {
 
                 resultSet = checkStmt.executeQuery();
                 if (!resultSet.next()) {
-                    log.error("Match find error");
-                    throw new RuntimeException("Failed to find match data");
+                    log.error("Empty JSON response: no resultSet found ");
+                    throw new RuntimeException("resultSet is null");
                 }
             }
 
             JSONObject matchData = new JSONObject();
-            matchData.put("id", resultSet.getLong("id"));
-            matchData.put("duration", resultSet.getInt("duration"));
-            matchData.put("firstBlood", resultSet.getInt("firstBlood"));
-            matchData.put("radiantScore", resultSet.getInt("radiantScore"));
-            matchData.put("direScore", resultSet.getInt("direScore"));
-            matchData.put("radiantWin", resultSet.getBoolean("radiantWin"));
-            matchData.put("chat", resultSet.getString("chat"));
-            matchData.put("demoLink", resultSet.getString("demoLink"));
-            matchData.put("matchDate", resultSet.getTimestamp("matchDate"));
+            matchData.put(Constants.JSON_ID, resultSet.getLong(Constants.JSON_ID));
+            matchData.put(Constants.JSON_DURATION, resultSet.getInt(Constants.JSON_DURATION));
+            matchData.put(Constants.JSON_FIRST_BLOOD, resultSet.getInt(Constants.JSON_FIRST_BLOOD));
+            matchData.put(Constants.JSON_TEAM_SCORE[0], resultSet.getInt(Constants.JSON_TEAM_SCORE[0]));
+            matchData.put(Constants.JSON_TEAM_SCORE[1], resultSet.getInt(Constants.JSON_TEAM_SCORE[1]));
+            matchData.put(Constants.JSON_TEAM_WINNER, resultSet.getBoolean(Constants.JSON_TEAM_WINNER));
+            matchData.put(Constants.JSON_CHAT, resultSet.getString(Constants.JSON_CHAT));
+            matchData.put(Constants.JSON_DEMO_LINK, resultSet.getString(Constants.JSON_DEMO_LINK));
+            matchData.put(Constants.JSON_MATCH_DATE, resultSet.getTimestamp(Constants.JSON_MATCH_DATE));
 
             return matchData;
         } catch (Exception e) {
@@ -474,7 +269,7 @@ public class SqlDatabaseClient {
         }
     }
 
-    public static void deleteMatchData(String matchId) throws Exception {
+    public static int deleteMatchData(String matchId) throws Exception {
         HistoryEntity historyEntity = new HistoryEntity(
                 new Date(),
                 "SqlDatabaseClient",
@@ -484,21 +279,23 @@ public class SqlDatabaseClient {
                 Constants.ACTOR_SYSTEM
         );
 
-        String deleteQuery = "DELETE FROM matches WHERE id = ?";
+        String deleteQuery = Constants.SQL_MATCH_DELETE;
         try (PreparedStatement stmt = getDatabase().prepareStatement(deleteQuery)) {
             stmt.setLong(1, Long.parseLong(matchId));
             int count = stmt.executeUpdate();
             if (count > 0)
-                log.info("Match with ID {} deleted successfully", matchId);
+                log.info("Match deleted successfully");
             else
-                log.warn("No match found with ID {} to delete", matchId);
+                log.warn("No match found to delete");
 
             DatabaseUtil.save(historyEntity);
+            return count;
         } catch (Exception e) {
             historyEntity.setStatus(HistoryEntity.Status.FAIL);
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
             log.error("Error in deleteMatch method: {}", e.getMessage());
+            return -1;
         }
     }
 
@@ -507,12 +304,12 @@ public class SqlDatabaseClient {
         JSONArray playersData = getMatchPlayers(matchId);
 
         if (matchData != null)
-            matchData.put("players", playersData);
+            matchData.put(Constants.JSON_PLAYER, playersData);
 
         return matchData;
     }
 
-    public static void putPlayer(String playerId) throws Exception {
+    private static void putPlayer(String playerId) throws Exception {
         HistoryEntity historyEntity = new HistoryEntity(
                 new Date(),
                 "SqlDatabaseClient",
@@ -525,40 +322,50 @@ public class SqlDatabaseClient {
         try {
             JSONObject playerData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_PLAYERS + playerId);
             if (playerData == null) {
-                log.error("playerData is null");
+                log.error("Empty JSON response: no playerData found");
                 throw new IllegalArgumentException("playerData is null");
             }
 
             JSONObject profile = playerData.getJSONObject("profile");
-            if (profile == null) {
-                log.error("profile is null");
-                throw new IllegalArgumentException("profile is null");
-            }
-
             JSONObject playerDataWL = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_PLAYERS + playerId + Constants.API_CONSTANTS_PLAYERS_WL);
-            if (playerDataWL == null) {
-                log.error("playerDataWL is null");
-                throw new IllegalArgumentException("playerDataWL is null");
-            }
-
             JSONArray playerDataSum = DatabaseUtil.getJsonArr(Constants.API_CONSTANTS_PLAYERS + playerId + Constants.API_CONSTANTS_PLAYERS_SUM);
-            if (playerDataSum == null) {
-                log.error("playerDataSum is null");
-                throw new IllegalArgumentException("playerDataSum is null");
-            }
-
             JSONObject playerDataChat = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_PLAYERS + playerId + "/wordcloud");
-            if (playerDataChat == null) {
-                log.error("playerDataChat is null");
-                throw new IllegalArgumentException("playerDataChat is null");
+            if (profile == null || playerDataWL == null || playerDataSum == null || playerDataChat == null) {
+                log.error("Empty JSON response: no profile or playerDataWL or playerDataSum or playerDataChat found");
+                throw new IllegalArgumentException("profile or playerDataWL or playerDataSum or playerDataChat is null");
             }
 
-            long id = profile.getLong("account_id");
-            String name = profile.optString("personaname");
-            String rang = playerData.optString("rank_tier");
-            int wins = playerDataWL.getInt("win");
-            int losses = playerDataWL.getInt("lose");
-            String hasPlus = profile.getBoolean("plus") ? "true" : "false";
+            String rank = playerData.optString(Constants.JSON_RANK);
+            if (rank.length() < 2) {
+                log.error("rank length error");
+                throw new RuntimeException("unknown rank");
+            }
+            int league = Character.getNumericValue(rank.charAt(0));
+            int tier = Character.getNumericValue(rank.charAt(1));
+            int startMMR = -1;
+            int endMMR = -1;
+            if (league <= 6 && league >= 1) {
+                startMMR = ((league - 1) * 5 + (tier - 1)) * 154;
+                endMMR = startMMR + 154;
+                rank = Constants.RANK_NAMES[league - 1] + " " + tier + ": " + startMMR + " - " + endMMR;
+            } else if (league == 7) {
+                startMMR = 4620 + (tier - 1) * 200;
+                endMMR = startMMR + 200;
+                rank = Constants.RANK_NAMES[league - 1] + " " + tier + ": " + startMMR + " - " + endMMR;
+            } else if (league == 8) {
+                startMMR = 5620;
+                rank = Constants.RANK_NAMES[league - 1] + ": " + startMMR + "+";
+            } else {
+                log.error("unknown rank");
+                throw new RuntimeException("unknown rank");
+            }
+
+            long id = profile.getLong(Constants.JSON_ACCOUNT);
+            String name = profile.optString(Constants.JSON_NAME);
+            String rang = rank;
+            int wins = playerDataWL.getInt(Constants.JSON_WIN);
+            int losses = playerDataWL.getInt(Constants.JSON_LOSE);
+            String hasPlus = profile.getBoolean(Constants.JSON_PLUS) ? "true" : "false";
             int pings = 0;
             int rapiers = 0;
             int observers = 0;
@@ -568,9 +375,10 @@ public class SqlDatabaseClient {
 
             for (int i = 0; i < playerDataSum.length(); i++) {
                 JSONObject total = playerDataSum.getJSONObject(i);
-                String field = total.getString("field");
-                int sum = total.getInt("sum");
+                String field = total.getString(Constants.JSON_FIELD);
+                int sum = total.getInt(Constants.JSON_SUM);
 
+                // TODO: switch -> stream
                 switch (field) {
                     case "pings":
                         pings = sum;
@@ -595,25 +403,7 @@ public class SqlDatabaseClient {
                 }
             }
 
-            String query = """
-            INSERT INTO players (
-                id, name, rang, wins, losses, hasPlus, pings, rapiers,
-                observers, sentries, towerDmg, heroDmg
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-                name = VALUES(name),
-                rang = VALUES(rang),
-                wins = VALUES(wins),
-                losses = VALUES(losses),
-                hasPlus = VALUES(hasPlus),
-                pings = VALUES(pings),
-                rapiers = VALUES(rapiers),
-                observers = VALUES(observers),
-                sentries = VALUES(sentries),
-                towerDmg = VALUES(towerDmg),
-                heroDmg = VALUES(heroDmg)
-            """;
-
+            String query = Constants.SQL_PLAYERS_INSERT;
             try (PreparedStatement stmt = getDatabase().prepareStatement(query)) {
                 stmt.setLong(1, id);
                 stmt.setString(2, name);
@@ -639,4 +429,87 @@ public class SqlDatabaseClient {
             log.error("Error in putPlayer method: {}", e.getMessage());
         }
     }
+
+    public static JSONObject getPlayerData(String playerId) throws Exception {
+        HistoryEntity historyEntity = new HistoryEntity(
+                new Date(),
+                "SqlDatabaseClient",
+                "getPlayerData()",
+                "Find player data by id",
+                HistoryEntity.Status.SUCCESS,
+                Constants.ACTOR_SYSTEM
+        );
+
+        String checkQuery = Constants.SQL_PLAYER_SELECT;
+        try (PreparedStatement checkStmt = getDatabase().prepareStatement(checkQuery)) {
+            checkStmt.setLong(1, Long.parseLong(playerId));
+            var resultSet = checkStmt.executeQuery();
+
+            if (!resultSet.next()) {
+                putPlayer(playerId);
+
+                resultSet = checkStmt.executeQuery();
+                if (!resultSet.next()) {
+                    log.error("Empty JSON response: no resultSet found  ");
+                    throw new RuntimeException("resultSet is null");
+                }
+            }
+
+            JSONObject playerData = new JSONObject();
+            playerData.put(Constants.JSON_ID, resultSet.getLong(Constants.JSON_ID));
+            playerData.put(Constants.JSON_ACCOUNT_NAME, resultSet.getString(Constants.JSON_ACCOUNT_NAME));
+            playerData.put(Constants.JSON_RANG, resultSet.getString(Constants.JSON_RANG));
+            playerData.put(Constants.JSON_WINS, resultSet.getInt(Constants.JSON_WINS));
+            playerData.put(Constants.JSON_LOSES, resultSet.getInt(Constants.JSON_LOSES));
+            playerData.put(Constants.JSON_HAS_PLUS, resultSet.getString(Constants.JSON_HAS_PLUS));
+            playerData.put(Constants.JSON_PINGS, resultSet.getInt(Constants.JSON_PINGS));
+            playerData.put(Constants.JSON_RAPIERS, resultSet.getInt(Constants.JSON_RAPIERS));
+            playerData.put(Constants.JSON_OBSERVERS, resultSet.getInt(Constants.JSON_OBSERVERS));
+            playerData.put(Constants.JSON_SENTRIES, resultSet.getInt(Constants.JSON_SENTRIES));
+            playerData.put(Constants.JSON_TOWER_DMG, resultSet.getLong(Constants.JSON_TOWER_DMG));
+            playerData.put(Constants.JSON_HERO_DMG, resultSet.getLong(Constants.JSON_HERO_DMG));
+
+            return playerData;
+        } catch (Exception e) {
+            historyEntity.setStatus(HistoryEntity.Status.FAIL);
+            historyEntity.setMessage(e.getMessage());
+            DatabaseUtil.save(historyEntity);
+
+            log.error("Error in getPlayerData method: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    public static int deletePlayerData(String playerId) throws Exception {
+        HistoryEntity historyEntity = new HistoryEntity(
+                new Date(),
+                "SqlDatabaseClient",
+                "deletePlayerData()",
+                "Delete player by ID",
+                HistoryEntity.Status.SUCCESS,
+                Constants.ACTOR_SYSTEM
+        );
+
+        String deleteQuery = Constants.SQL_PLAYER_DELETE;
+        try (PreparedStatement stmt = getDatabase().prepareStatement(deleteQuery)) {
+            stmt.setLong(1, Long.parseLong(playerId));
+            int count = stmt.executeUpdate();
+            if (count > 0)
+                log.info("Player deleted successfully");
+            else
+                log.warn("No player found to delete");
+
+            DatabaseUtil.save(historyEntity);
+            return count;
+        } catch (Exception e) {
+            historyEntity.setStatus(HistoryEntity.Status.FAIL);
+            historyEntity.setMessage(e.getMessage());
+            DatabaseUtil.save(historyEntity);
+            log.error("Error in deletePlayerData method: {}", e.getMessage());
+            return -1;
+        }
+    }
+
+    // TODO: players & pros played with
+    // TODO: postgresql
 }

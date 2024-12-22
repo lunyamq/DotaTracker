@@ -65,11 +65,11 @@ public class DotaTrackerClient {
 //        System.out.println(SqlDatabaseClient.getMatch("8084063499"));
 //        SqlDatabaseClient.deleteMatch("8084063499");
 
-        System.out.println(SqlDatabaseClient.getMatchData("8088747175"));
+        System.out.println(SqlDatabaseClient.getMatchData("7963915428"));
+//        SqlDatabaseClient.deleteMatchData("8088747175");
 
-        // ПЕРЕД ПОЛУЧЕНИЕМ ПОБОЧНЫХ ТАБЛИЦ - PUTMATCH()
-
-//        SqlDatabaseClient.putPlayer("321580662");
+        System.out.println(SqlDatabaseClient.getPlayerData("175201878"));
+//        SqlDatabaseClient.deletePlayerData("175201878");
 
         log.info("end");
     }
