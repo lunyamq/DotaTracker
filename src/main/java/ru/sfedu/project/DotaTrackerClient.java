@@ -1,5 +1,6 @@
 package ru.sfedu.project;
 
+import picocli.CommandLine;
 import ru.sfedu.project.db.SqlDatabaseClient;
 import ru.sfedu.project.utils.ConfigurationUtil;
 
@@ -46,31 +47,10 @@ public class DotaTrackerClient {
         log.info("Environment: {}", util.getConfigurationEntry(Constants.PARAMS[3]));
     }
 
-
-
-
     public static void main(String[] args) throws Exception {
-//        DotaTrackerClient.logBasicSystemInfo();
-//
-//        MongoDatabaseClient.putHeroes();
-//        log.info(MongoDatabaseClient.getHero("Axe"));
-//
-//        MongoDatabaseClient.putPatches();
-//        log.info(MongoDatabaseClient.getPatch("7.32"));
+        logBasicSystemInfo();
 
-//        SqlDatabaseClient.putMatch("8087422283");
-//        System.out.println(SqlDatabaseClient.getMatchHeroes("8087422283"));
-
-//        SqlDatabaseClient.putMatchHeroes("8084063499");
-//        System.out.println(SqlDatabaseClient.getMatch("8084063499"));
-//        SqlDatabaseClient.deleteMatch("8084063499");
-
-        System.out.println(SqlDatabaseClient.getMatchData("7963915428"));
-//        SqlDatabaseClient.deleteMatchData("8088747175");
-
-        System.out.println(SqlDatabaseClient.getPlayerData("175201878"));
-//        SqlDatabaseClient.deletePlayerData("175201878");
-
-        log.info("end");
+        int exitCode = new CommandLine(new DotaCLI()).execute(args);
+        System.exit(exitCode);
     }
 }
