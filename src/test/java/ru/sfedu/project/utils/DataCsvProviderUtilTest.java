@@ -34,6 +34,6 @@ class DataCsvProviderUtilTest {
 
         util.deleteRecord(entity);
         findEntity = util.getRecordById(entity.getId());
-        assertNull(findEntity, "deleteRecord error!");
+        assertTrue(findEntity.isEmpty(), "deleteRecord error!");
     }
 }

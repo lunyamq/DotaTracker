@@ -1,36 +1,40 @@
 package ru.sfedu.project.db;
 
+import static ru.sfedu.project.Constants.log;
+import static ru.sfedu.project.Constants.util;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ru.sfedu.project.Constants;
 import ru.sfedu.project.entities.HistoryEntity;
-import ru.sfedu.project.utils.ConfigurationUtil;
 import ru.sfedu.project.utils.DatabaseUtil;
-
 import java.io.IOException;
 import java.util.Date;
-import java.util.Objects;
-
 import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDatabaseClient {
-    private static MongoDatabase database;
-    private static final String environment = System.getProperty(Constants.CONFIG_KEY, Constants.DEFAULT_CONFIG_PATH);
-    private static final ConfigurationUtil util = new ConfigurationUtil(environment);
-    private static final Logger log = LogManager.getLogger(MongoDatabaseClient.class);
+    private static MongoDatabase database = null;
+
+    static {
+        Configurator.setLevel("org.mongodb", org.apache.logging.log4j.Level.OFF);
+    }
 
     public static MongoDatabase getDatabase() throws IOException {
         if (database == null) {
-            String uri = util.getConfigurationEntry(Constants.PARAMS[4]);
-            MongoClient mongoClient = MongoClients.create(uri);
-            database = mongoClient.getDatabase(Constants.MONGO_DB_NAME);
+            try {
+                String uri = util.getConfigurationEntry(Constants.PARAMS[4]);
+                MongoClient mongoClient = MongoClients.create(uri);
+                database = mongoClient.getDatabase(Constants.MONGO_DB_NAME);
+            } catch (Exception e) {
+                log.error("Error in getDatabase method");
+                throw new RuntimeException("Failed to connect to database", e);
+            }
         }
 
         return database;
@@ -55,7 +59,7 @@ public class MongoDatabaseClient {
 
             MongoCollection<Document> collection = MongoDatabaseClient.getCollection(Constants.MONGO_DB_COLLECTIONS[1]);
             collection.deleteMany(new Document());
-            for (String heroId : Objects.requireNonNull(heroesJson).keySet()) {
+            for (String heroId : heroesJson.keySet()) {
                 JSONObject heroData = heroesJson.getJSONObject(heroId);
                 String heroName = heroData.getString(Constants.MONGO_DB_HEROES_FIELDS[0]);
 
@@ -79,7 +83,8 @@ public class MongoDatabaseClient {
 
     public static Document getHero(String name) throws IOException {
         MongoCollection<Document> collection = MongoDatabaseClient.getCollection(Constants.MONGO_DB_COLLECTIONS[1]);
-        return collection.find(eq(Constants.MONGO_DB_HEROES_FIELDS[0], name)).first();
+        Document res = collection.find(eq(Constants.MONGO_DB_HEROES_FIELDS[0], name)).first();
+        return res != null ? res : new Document();
     }
 
     public static void putPatches() throws Exception {
@@ -97,7 +102,7 @@ public class MongoDatabaseClient {
 
             MongoCollection<Document> collection = MongoDatabaseClient.getCollection(Constants.MONGO_DB_COLLECTIONS[2]);
             collection.deleteMany(new Document());
-            for (int i = 0; i < Objects.requireNonNull(patchJsonArr).length(); i++) {
+            for (int i = 0; i < patchJsonArr.length(); i++) {
                 JSONObject patchData = patchJsonArr.getJSONObject(i);
                 Integer patchId = patchData.getInt(Constants.MONGO_DB_PATCHES_FIELDS[0]);
                 String patchName = patchData.getString(Constants.MONGO_DB_PATCHES_FIELDS[1]);
@@ -123,6 +128,7 @@ public class MongoDatabaseClient {
 
     public static Document getPatch(String name) throws IOException {
         MongoCollection<Document> collection = MongoDatabaseClient.getCollection(Constants.MONGO_DB_COLLECTIONS[2]);
-        return collection.find(eq(Constants.MONGO_DB_PATCHES_FIELDS[1], name)).first();
+        Document res = collection.find(eq(Constants.MONGO_DB_PATCHES_FIELDS[1], name)).first();
+        return res != null ? res : new Document();
     }
 }

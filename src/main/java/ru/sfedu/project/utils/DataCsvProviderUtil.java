@@ -32,7 +32,6 @@ public class DataCsvProviderUtil implements IDataProvider<HistoryEntity> {
                 log.info("csv file created");
     }
 
-    @Override
     public HistoryEntity getRecordById(String id) {
         try (CSVReader reader = new CSVReader(new FileReader(recordPath))) {
             List<String[]> records = reader.readAll();
@@ -45,7 +44,7 @@ public class DataCsvProviderUtil implements IDataProvider<HistoryEntity> {
             throw new RuntimeException(e);
         }
 
-        return null;
+        return new HistoryEntity();
     }
 
     public HistoryEntity getRecordById(ObjectId id) {
@@ -62,7 +61,6 @@ public class DataCsvProviderUtil implements IDataProvider<HistoryEntity> {
         }
     }
 
-    @Override
     public void deleteRecord(HistoryEntity record) {
         List<String[]> records;
 

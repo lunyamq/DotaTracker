@@ -49,7 +49,6 @@ public class DotaCLI implements Callable<Integer> {
         );
 
         try {
-            // TODO: del trash text
             if (refreshDb) {
                 log.info("Refreshing MongoDB...");
                 MongoDatabaseClient.putHeroes();
@@ -58,7 +57,7 @@ public class DotaCLI implements Callable<Integer> {
             }
             if (heroName != null) {
                 Document hero = MongoDatabaseClient.getHero(heroName);
-                if (hero != null)
+                if (!hero.isEmpty())
                     log.info(hero.toJson(settings));
                 else
                     log.error("Hero does not exist or can not be find in database\n" +
@@ -66,7 +65,7 @@ public class DotaCLI implements Callable<Integer> {
             }
             if (patchName != null) {
                 Document patch = MongoDatabaseClient.getPatch(patchName);
-                if (patch != null)
+                if (!patch.isEmpty())
                     log.info(patch.toJson(settings));
                 else
                     log.error("Patch does not exist or can not be find in database\n" +
@@ -75,7 +74,7 @@ public class DotaCLI implements Callable<Integer> {
 
             if (playerIdAdd != null) {
                 JSONObject player = SqlDatabaseClient.getPlayerData(playerIdAdd);
-                if (player != null)
+                if (!player.isEmpty())
                     log.info(player.toString(2));
                 else
                     log.error("Player does not exist");
@@ -87,7 +86,7 @@ public class DotaCLI implements Callable<Integer> {
             }
             if (matchIdAdd != null) {
                 JSONObject match = SqlDatabaseClient.getMatchData(matchIdAdd);
-                if (match != null)
+                if (!match.isEmpty())
                     log.info(match.toString(2));
                 else
                     log.error("Match does not exist");
@@ -102,7 +101,8 @@ public class DotaCLI implements Callable<Integer> {
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
             log.error("Error in call method: {}", e.getMessage());
-            return 1;
+
+            return 3;
         }
 
         return 0;

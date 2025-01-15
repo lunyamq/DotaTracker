@@ -28,7 +28,7 @@ public class HistoryContent {
     }
 
     public static ObjectId getId() {
-        if (historyDoc == null) return null;
+        if (historyDoc.isEmpty()) return new ObjectId();
 
         return historyDoc.getObjectId(Constants.MONGO_DB_ID);
     }
@@ -62,6 +62,6 @@ public class HistoryContent {
             );
         }
 
-        return null;
+        return new HistoryEntity();
     }
 }

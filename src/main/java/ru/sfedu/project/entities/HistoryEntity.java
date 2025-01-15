@@ -47,6 +47,10 @@ public class HistoryEntity {
         this.actor = actor;
     }
 
+    public boolean isEmpty() {
+        return id == null && creationDate == null;
+    }
+
     public void setId(ObjectId id) {
         this.id = id;
     }

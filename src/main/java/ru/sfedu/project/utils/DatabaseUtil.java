@@ -39,7 +39,7 @@ public class DatabaseUtil {
 
         int responseCode = connection.getResponseCode();
         if (responseCode != 200)
-            return null;
+            return new JSONObject();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         return new JSONObject(new JSONTokener(in));
@@ -53,7 +53,7 @@ public class DatabaseUtil {
 
         int responseCode = connection.getResponseCode();
         if (responseCode != 200)
-            return null;
+            return new JSONArray();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         return new JSONArray(new JSONTokener(in));

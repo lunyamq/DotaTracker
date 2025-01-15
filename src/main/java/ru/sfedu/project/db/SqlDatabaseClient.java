@@ -1,27 +1,22 @@
 package ru.sfedu.project.db;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static ru.sfedu.project.Constants.log;
+import static ru.sfedu.project.Constants.util;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import ru.sfedu.project.Constants;
 import ru.sfedu.project.entities.HistoryEntity;
-import ru.sfedu.project.utils.ConfigurationUtil;
 import ru.sfedu.project.utils.DatabaseUtil;
-
 import java.sql.*;
 import java.util.Date;
 
 public class SqlDatabaseClient {
-    private static Connection database;
-    private static final String environment = System.getProperty(Constants.CONFIG_KEY, Constants.DEFAULT_CONFIG_PATH);
-    private static final ConfigurationUtil util = new ConfigurationUtil(environment);
-    private static final Logger log = LogManager.getLogger(SqlDatabaseClient.class);
+    private static Connection database = null;
 
     static {
-        try {
+        try(Statement stmt = getDatabase().createStatement()) {
                 String createTableSQL = Constants.SQL_MATCHES_TABLE;
-                Statement stmt = getDatabase().createStatement();
                 stmt.executeUpdate(createTableSQL);
 
                 createTableSQL = Constants.SQL_PLAYERS_TABLE;
@@ -29,9 +24,6 @@ public class SqlDatabaseClient {
 
                 createTableSQL = Constants.SQL_MATCH_PLAYERS_TABLE;
                 stmt.executeUpdate(createTableSQL);
-                stmt.close();
-
-            log.info("All tables are created successfully");
         } catch (SQLException e) {
             log.error("Can't create tables: {}", e.getMessage());
             throw new RuntimeException(e);
@@ -46,7 +38,6 @@ public class SqlDatabaseClient {
                 String password = util.getConfigurationEntry(Constants.PARAMS[8]);
 
                 database = DriverManager.getConnection(url, user, password);
-                log.info("Connected to SQL database");
             } catch (Exception e) {
                 log.error("Error in getDatabase method");
                 throw new RuntimeException("Failed to connect to database", e);
@@ -71,9 +62,9 @@ public class SqlDatabaseClient {
             JSONObject matchData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_MATCHES + matchId);
             JSONObject heroesJson = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_HEROES);
 
-            if (matchData == null || heroesJson == null) {
-                log.error("Empty JSON response: no matchData or heroesJson found");
-                throw new IllegalArgumentException("matchData or heroesJson is null");
+            if (matchData.isEmpty() || heroesJson.isEmpty()) {
+                log.debug("Empty JSON response: no matchData or heroesJson found");
+                throw new IllegalArgumentException("matchData or heroesJson is Empty");
             }
 
             JSONArray playersData = matchData.getJSONArray(Constants.JSON_PLAYER);
@@ -112,7 +103,7 @@ public class SqlDatabaseClient {
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
 
-            log.error("Error in savePlayersInMatch method: {}", e.getMessage());
+            log.debug("Error in savePlayersInMatch method: {}", e.getMessage());
         }
     }
 
@@ -138,8 +129,8 @@ public class SqlDatabaseClient {
 
                 resultSet = stmt.executeQuery();
                 if (!resultSet.next()) {
-                    log.error("Empty JSON response: no resultSet found");
-                    throw new RuntimeException("resultSet is null");
+                    log.debug("Empty JSON response: no resultSet found");
+                    throw new RuntimeException("resultSet is Empty");
                 }
             }
 
@@ -163,9 +154,9 @@ public class SqlDatabaseClient {
             historyEntity.setStatus(HistoryEntity.Status.FAIL);
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
-            log.error("Error in getMatchPlayers method: {}", e.getMessage());
+            log.debug("Error in getMatchPlayers method: {}", e.getMessage());
 
-            return null;
+            return new JSONArray();
         }
     }
 
@@ -181,9 +172,9 @@ public class SqlDatabaseClient {
 
         try {
             JSONObject matchData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_MATCHES + matchId);
-            if (matchData == null) {
-                log.error("Empty JSON response: no matchData found");
-                throw new IllegalArgumentException("matchData is null");
+            if (matchData.isEmpty()) {
+                log.debug("Empty JSON response: no matchData found");
+                throw new IllegalArgumentException("matchData is Empty");
             }
 
             long id = matchData.getLong(Constants.JSON_MATCH);
@@ -192,8 +183,8 @@ public class SqlDatabaseClient {
             int radiantScore = matchData.getInt(Constants.JSON_SCORE[0]);
             int direScore = matchData.getInt(Constants.JSON_SCORE[1]);
             boolean isRadiantWin = matchData.getBoolean(Constants.JSON_WINNER);
-            String chat = matchData.has(Constants.JSON_CHAT) ? matchData.getJSONArray(Constants.JSON_CHAT).toString() : null;
-            String demoLink = matchData.has(Constants.JSON_REPLAY) ? matchData.optString(Constants.JSON_REPLAY) : null;
+            String chat = matchData.has(Constants.JSON_CHAT) ? matchData.getJSONArray(Constants.JSON_CHAT).toString() : "";
+            String demoLink = matchData.has(Constants.JSON_REPLAY) ? matchData.optString(Constants.JSON_REPLAY) : "";
             long matchDate = matchData.getLong(Constants.JSON_START);
 
             String query = Constants.SQL_MATCHES_INSERT;
@@ -218,7 +209,7 @@ public class SqlDatabaseClient {
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
 
-            log.error("Error in putMatch method: {}", e.getMessage());
+            log.debug("Error in putMatch method: {}", e.getMessage());
         }
     }
 
@@ -242,8 +233,8 @@ public class SqlDatabaseClient {
 
                 resultSet = checkStmt.executeQuery();
                 if (!resultSet.next()) {
-                    log.error("Empty JSON response: no resultSet found ");
-                    throw new RuntimeException("resultSet is null");
+                    log.debug("Empty JSON response: no resultSet found ");
+                    throw new RuntimeException("resultSet is Empty");
                 }
             }
 
@@ -264,8 +255,8 @@ public class SqlDatabaseClient {
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
 
-            log.error("Error in getMatch method: {}", e.getMessage());
-            return null;
+            log.debug("Error in getMatch method: {}", e.getMessage());
+            return new JSONObject();
         }
     }
 
@@ -284,9 +275,9 @@ public class SqlDatabaseClient {
             stmt.setLong(1, Long.parseLong(matchId));
             int count = stmt.executeUpdate();
             if (count > 0)
-                log.info("Match deleted successfully");
+                log.debug("Match deleted successfully");
             else
-                log.warn("No match found to delete");
+                log.debug("No match found to delete");
 
             DatabaseUtil.save(historyEntity);
             return count;
@@ -294,8 +285,9 @@ public class SqlDatabaseClient {
             historyEntity.setStatus(HistoryEntity.Status.FAIL);
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
-            log.error("Error in deleteMatch method: {}", e.getMessage());
-            return -1;
+            log.debug("Error in deleteMatch method: {}", e.getMessage());
+
+            return 0;
         }
     }
 
@@ -303,7 +295,7 @@ public class SqlDatabaseClient {
         JSONObject matchData = getMatch(matchId);
         JSONArray playersData = getMatchPlayers(matchId);
 
-        if (matchData != null)
+        if (!matchData.isEmpty())
             matchData.put(Constants.JSON_PLAYER, playersData);
 
         return matchData;
@@ -321,18 +313,18 @@ public class SqlDatabaseClient {
 
         try {
             JSONObject playerData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_PLAYERS + playerId);
-            if (playerData == null) {
-                log.error("Empty JSON response: no playerData found");
-                throw new IllegalArgumentException("playerData is null");
+            if (playerData.isEmpty()) {
+                log.debug("Empty JSON response: no playerData found");
+                throw new IllegalArgumentException("playerData is Empty");
             }
 
             JSONObject profile = playerData.getJSONObject("profile");
             JSONObject playerDataWL = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_PLAYERS + playerId + Constants.API_CONSTANTS_PLAYERS_WL);
             JSONArray playerDataSum = DatabaseUtil.getJsonArr(Constants.API_CONSTANTS_PLAYERS + playerId + Constants.API_CONSTANTS_PLAYERS_SUM);
             JSONObject playerDataChat = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_PLAYERS + playerId + "/wordcloud");
-            if (profile == null || playerDataWL == null || playerDataSum == null || playerDataChat == null) {
+            if (profile.isEmpty() || playerDataWL.isEmpty() || playerDataSum.isEmpty() || playerDataChat.isEmpty()) {
                 log.error("Empty JSON response: no profile or playerDataWL or playerDataSum or playerDataChat found");
-                throw new IllegalArgumentException("profile or playerDataWL or playerDataSum or playerDataChat is null");
+                throw new IllegalArgumentException("profile or playerDataWL or playerDataSum or playerDataChat is Empty");
             }
 
             String rank = playerData.optString(Constants.JSON_RANK);
@@ -378,7 +370,6 @@ public class SqlDatabaseClient {
                 String field = total.getString(Constants.JSON_FIELD);
                 int sum = total.getInt(Constants.JSON_SUM);
 
-                // TODO: switch -> stream
                 switch (field) {
                     case "pings":
                         pings = sum;
@@ -426,7 +417,7 @@ public class SqlDatabaseClient {
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
 
-            log.error("Error in putPlayer method: {}", e.getMessage());
+            log.debug("Error in putPlayer method: {}", e.getMessage());
         }
     }
 
@@ -450,8 +441,8 @@ public class SqlDatabaseClient {
 
                 resultSet = checkStmt.executeQuery();
                 if (!resultSet.next()) {
-                    log.error("Empty JSON response: no resultSet found  ");
-                    throw new RuntimeException("resultSet is null");
+                    log.debug("Empty JSON response: no resultSet found  ");
+                    throw new RuntimeException("resultSet is Empty");
                 }
             }
 
@@ -475,8 +466,8 @@ public class SqlDatabaseClient {
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
 
-            log.error("Error in getPlayerData method: {}", e.getMessage());
-            return null;
+            log.debug("Error in getPlayerData method: {}", e.getMessage());
+            return new JSONObject();
         }
     }
 
@@ -495,9 +486,9 @@ public class SqlDatabaseClient {
             stmt.setLong(1, Long.parseLong(playerId));
             int count = stmt.executeUpdate();
             if (count > 0)
-                log.info("Player deleted successfully");
+                log.debug("Player deleted successfully");
             else
-                log.warn("No player found to delete");
+                log.debug("No player found to delete");
 
             DatabaseUtil.save(historyEntity);
             return count;
@@ -505,12 +496,9 @@ public class SqlDatabaseClient {
             historyEntity.setStatus(HistoryEntity.Status.FAIL);
             historyEntity.setMessage(e.getMessage());
             DatabaseUtil.save(historyEntity);
-            log.error("Error in deletePlayerData method: {}", e.getMessage());
-            return -1;
+            log.debug("Error in deletePlayerData method: {}", e.getMessage());
+
+            return 0;
         }
     }
-
-    // TODO: players & pros played with
-    // TODO: postgresql
-    // TODO: interface
 }

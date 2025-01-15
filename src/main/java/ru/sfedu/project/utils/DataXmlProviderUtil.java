@@ -61,21 +61,11 @@ public class DataXmlProviderUtil implements IDataProvider<HistoryEntity> {
         }
     }
 
-    // TODO: fix
-    @Override
-    public HistoryEntity getRecordById(String id) {
-        return null;
-    }
-
-    public HistoryEntity getRecordById(ObjectId id) {
-        return null;
-    }
-
     public HistoryEntity getRecord(String methodName) {
         return records.stream()
                 .filter(rec -> Objects.equals(rec.getMethodName(), methodName))
                 .findFirst()
-                .orElse(null);
+                .orElse(new HistoryEntity());
     }
 
     @Override
@@ -83,9 +73,4 @@ public class DataXmlProviderUtil implements IDataProvider<HistoryEntity> {
         records.add(record);
         save();
     }
-
-    @Override
-    public void deleteRecord(HistoryEntity record) throws Exception { }
-
-    public void deleteRecordById(String id) throws Exception { }
 }

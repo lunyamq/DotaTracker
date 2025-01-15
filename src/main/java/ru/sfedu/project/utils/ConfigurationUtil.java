@@ -22,10 +22,21 @@ public class ConfigurationUtil {
      * Hides default constructor
      */
     public ConfigurationUtil(String path) {
-        nf = new File(path);
+//        nf = new File(path);
+//
+//        if (!nf.exists() || !nf.isFile())
+//            throw new IllegalArgumentException("Configuration file not found: " + path);
 
-        if (!nf.exists() || !nf.isFile())
-            throw new IllegalArgumentException("Configuration file not found: " + path);
+
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
+            if (inputStream == null)
+                throw new IllegalArgumentException("Configuration file not found: " + path);
+
+            configuration.load(inputStream);
+        } catch (Exception e) {
+
+            throw new RuntimeException("Error loading configuration from: " + path, e);
+        }
     }
 
     private static Properties getConfiguration() throws IOException {
@@ -44,7 +55,7 @@ public class ConfigurationUtil {
      * @throws IOException In case of the configuration file read failure
      */
     private static void loadConfiguration() throws IOException {
-        // DEFAULT_CONFIG_PATH.getClass().getResourceAsStream(DEFAULT_CONFIG_PATH);
+//         DEFAULT_CONFIG_PATH.getClass().getResourceAsStream(DEFAULT_CONFIG_PATH);
 
         try (InputStream in = new FileInputStream(nf)) {
             String fileExtension = getFileExtension(nf);

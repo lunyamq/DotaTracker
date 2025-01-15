@@ -1,15 +1,25 @@
 package ru.sfedu.project;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ru.sfedu.project.db.MongoDatabaseClient;
+import ru.sfedu.project.utils.ConfigurationUtil;
+
 public class Constants {
     public static final String API = "https://api.opendota.com/api/";
+
+    public static final String environment = System.getProperty(Constants.CONFIG_KEY, Constants.DEFAULT_CONFIG_PATH);
+    public static final ConfigurationUtil util = new ConfigurationUtil(environment);
+    public static final Logger log = LogManager.getLogger(Constants.class);
 
     public static final String DEFAULT_LOG_PATH = ".\\logs\\application.log";
     public static final String CSV_LOG_PATH = ".\\logs\\log.csv";
     public static final String XML_LOG_PATH = ".\\logs\\log.xml";
-    public static final String DEFAULT_CONFIG_PATH = ".\\src\\main\\resources\\environment.properties";
-    public static final String XML_CONFIG_PATH = ".\\src\\main\\resources\\environment.xml";
-    public static final String YML_CONFIG_PATH = ".\\src\\main\\resources\\environment.yml";
+    public static final String DEFAULT_CONFIG_PATH = "environment.properties";
+    public static final String TEST_CONFIG_PATH = "env.properties";
+    public static final String XML_CONFIG_PATH = "environment.xml";
+    public static final String YML_CONFIG_PATH = "environment.yml";
 
     public static final String CONFIG_KEY = "config";
     public static final String[] PARAMS = { "app.name", "app.version", "app.author", "env.type",
