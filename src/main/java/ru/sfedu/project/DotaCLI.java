@@ -1,7 +1,7 @@
 package ru.sfedu.project;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static ru.sfedu.project.Constants.log;
+
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
 import org.json.JSONObject;
@@ -11,14 +11,11 @@ import ru.sfedu.project.db.MongoDatabaseClient;
 import ru.sfedu.project.db.SqlDatabaseClient;
 import ru.sfedu.project.entities.HistoryEntity;
 import ru.sfedu.project.utils.DatabaseUtil;
-
-import java.util.Date;
 import java.util.concurrent.Callable;
 
 @Command(name = "DotaCLI", mixinStandardHelpOptions = true, version = "DotaCLI 1.0",
         description = "CLI for DotaTracker")
 public class DotaCLI implements Callable<Integer> {
-    private static final Logger log = LogManager.getLogger(DotaCLI.class);
     JsonWriterSettings settings = JsonWriterSettings.builder().indent(true).build();
 
     @Option(names = {"-r", "--refresh-db"}, description = "Refresh the MongoDB")
@@ -27,6 +24,9 @@ public class DotaCLI implements Callable<Integer> {
     private String heroName;
     @Option(names = {"-pt", "--patch"}, description = "Get patch info by Name")
     private String patchName;
+
+    @Option(names = {"-c", "--cluster"}, description = "Use MongoDB on cluster(local by def). Slower. Works with -r, -hr, -pt")
+    private boolean cluster;
 
     @Option(names = {"-p", "--player"}, description = "Get player info by Id")
     private String playerIdAdd;
@@ -38,24 +38,23 @@ public class DotaCLI implements Callable<Integer> {
     private String matchIdDell;
 
     @Override
-    public Integer call() throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "DotaCLI",
-                "call()",
-                "CLI",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    public Integer call() {
+        HistoryEntity historyEntity = HistoryEntity.init("DotaCLI", "call()", "CLI");
 
         try {
             if (refreshDb) {
+                if (cluster)
+                    MongoDatabaseClient.getDatabase(true);
+
                 log.info("Refreshing MongoDB...");
                 MongoDatabaseClient.putHeroes();
                 MongoDatabaseClient.putPatches();
                 log.info("Refresh done");
             }
             if (heroName != null) {
+                if (cluster)
+                    MongoDatabaseClient.getDatabase(true);
+
                 Document hero = MongoDatabaseClient.getHero(heroName);
                 if (!hero.isEmpty())
                     log.info(hero.toJson(settings));
@@ -64,6 +63,9 @@ public class DotaCLI implements Callable<Integer> {
                             "Please refresh the MongoDB(-r) and try again");
             }
             if (patchName != null) {
+                if (cluster)
+                    MongoDatabaseClient.getDatabase(true);
+
                 Document patch = MongoDatabaseClient.getPatch(patchName);
                 if (!patch.isEmpty())
                     log.info(patch.toJson(settings));

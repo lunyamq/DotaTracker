@@ -1,8 +1,7 @@
 package ru.sfedu.project.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.bson.types.ObjectId;
+import static ru.sfedu.project.Constants.log;
+
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import ru.sfedu.project.entities.HistoryEntity;
@@ -17,7 +16,7 @@ class XmlWrapper {
     @ElementList
     private List<HistoryEntity> records;
 
-    public XmlWrapper() {};
+    public XmlWrapper() {}
 
     public XmlWrapper(List<HistoryEntity> records) {
         this.records = records;
@@ -32,11 +31,14 @@ class XmlWrapper {
 public class DataXmlProviderUtil implements IDataProvider<HistoryEntity> {
     private String recordPath;
     private List<HistoryEntity> records = new ArrayList<>();
-    private static final Logger log = LogManager.getLogger(DataXmlProviderUtil.class);
 
-    private void save() throws Exception {
-        Serializer serializer = new Persister();
-        serializer.write(new XmlWrapper(records), new File(recordPath));
+    private void save()  {
+        try {
+            Serializer serializer = new Persister();
+            serializer.write(new XmlWrapper(records), new File(recordPath));
+        } catch (Exception e) {
+            log.debug("Error in save method: {}", e.getMessage());
+        }
     }
 
     @Override
@@ -69,7 +71,7 @@ public class DataXmlProviderUtil implements IDataProvider<HistoryEntity> {
     }
 
     @Override
-    public void saveRecord(HistoryEntity record) throws Exception {
+    public void saveRecord(HistoryEntity record) {
         records.add(record);
         save();
     }

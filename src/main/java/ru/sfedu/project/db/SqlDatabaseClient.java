@@ -9,7 +9,6 @@ import ru.sfedu.project.Constants;
 import ru.sfedu.project.entities.HistoryEntity;
 import ru.sfedu.project.utils.DatabaseUtil;
 import java.sql.*;
-import java.util.Date;
 
 public class SqlDatabaseClient {
     private static Connection database = null;
@@ -48,15 +47,8 @@ public class SqlDatabaseClient {
     }
 
 
-    private static void putMatchPlayers(String matchId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "putMatchPlayers()",
-                "Saved players for match",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    private static void putMatchPlayers(String matchId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "putMatchPlayers()", "Saved players for match");
 
         try {
             JSONObject matchData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_MATCHES + matchId);
@@ -107,15 +99,8 @@ public class SqlDatabaseClient {
         }
     }
 
-    private static JSONArray getMatchPlayers(String matchId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "getMatchPlayers()",
-                "Receive players from match",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    private static JSONArray getMatchPlayers(String matchId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "getMatchPlayers()", "Receive players from match");
 
         String query = Constants.SQL_MATCH_PLAYERS_SELECT;
         JSONArray playersData = new JSONArray();
@@ -160,15 +145,8 @@ public class SqlDatabaseClient {
         }
     }
 
-    private static void putMatch(String matchId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "putMatch()",
-                "Saved match by id",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    private static void putMatch(String matchId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "putMatch()", "Saved match by id");
 
         try {
             JSONObject matchData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_MATCHES + matchId);
@@ -213,15 +191,8 @@ public class SqlDatabaseClient {
         }
     }
 
-    private static JSONObject getMatch(String matchId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "getMatch()",
-                "Find match by id",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    private static JSONObject getMatch(String matchId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "getMatch()", "Find match by id");
 
         String checkQuery = Constants.SQL_MATCH_SELECT;
         try (PreparedStatement checkStmt = getDatabase().prepareStatement(checkQuery)) {
@@ -260,15 +231,8 @@ public class SqlDatabaseClient {
         }
     }
 
-    public static int deleteMatchData(String matchId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "deleteMatch()",
-                "Delete match by ID",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    public static int deleteMatchData(String matchId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "deleteMatch()", "Delete match by ID");
 
         String deleteQuery = Constants.SQL_MATCH_DELETE;
         try (PreparedStatement stmt = getDatabase().prepareStatement(deleteQuery)) {
@@ -301,15 +265,8 @@ public class SqlDatabaseClient {
         return matchData;
     }
 
-    private static void putPlayer(String playerId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "putPlayer()",
-                "Saved player by id",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    private static void putPlayer(String playerId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "putPlayer()", "Saved player by id");
 
         try {
             JSONObject playerData = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_PLAYERS + playerId);
@@ -334,8 +291,8 @@ public class SqlDatabaseClient {
             }
             int league = Character.getNumericValue(rank.charAt(0));
             int tier = Character.getNumericValue(rank.charAt(1));
-            int startMMR = -1;
-            int endMMR = -1;
+            int startMMR;
+            int endMMR;
             if (league <= 6 && league >= 1) {
                 startMMR = ((league - 1) * 5 + (tier - 1)) * 154;
                 endMMR = startMMR + 154;
@@ -421,15 +378,8 @@ public class SqlDatabaseClient {
         }
     }
 
-    public static JSONObject getPlayerData(String playerId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "getPlayerData()",
-                "Find player data by id",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    public static JSONObject getPlayerData(String playerId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "getPlayerData()", "Find player data by id");
 
         String checkQuery = Constants.SQL_PLAYER_SELECT;
         try (PreparedStatement checkStmt = getDatabase().prepareStatement(checkQuery)) {
@@ -471,15 +421,8 @@ public class SqlDatabaseClient {
         }
     }
 
-    public static int deletePlayerData(String playerId) throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "SqlDatabaseClient",
-                "deletePlayerData()",
-                "Delete player by ID",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    public static int deletePlayerData(String playerId) {
+        HistoryEntity historyEntity = HistoryEntity.init("SqlDatabaseClient", "deletePlayerData()", "Delete player by ID");
 
         String deleteQuery = Constants.SQL_PLAYER_DELETE;
         try (PreparedStatement stmt = getDatabase().prepareStatement(deleteQuery)) {

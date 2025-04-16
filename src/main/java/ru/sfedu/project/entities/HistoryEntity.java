@@ -2,6 +2,7 @@ package ru.sfedu.project.entities;
 
 import org.bson.types.ObjectId;
 import org.simpleframework.xml.Transient;
+import ru.sfedu.project.Constants;
 import ru.sfedu.project.HistoryContent;
 import java.time.Instant;
 import java.util.Date;
@@ -45,6 +46,17 @@ public class HistoryEntity {
         this.message = message;
         this.status = status;
         this.actor = actor;
+    }
+
+    public static HistoryEntity init(String className, String methodName, String message) {
+        return new HistoryEntity(
+                new Date(),
+                className,
+                methodName,
+                message,
+                HistoryEntity.Status.SUCCESS,
+                Constants.ACTOR_SYSTEM
+        );
     }
 
     public boolean isEmpty() {

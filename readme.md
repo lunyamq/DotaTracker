@@ -25,7 +25,22 @@
    cd DotaTracker
    ```
 3. Убедитесь, что у вас установлен JDK 21.
-4. Соберите проект с использованием Maven
+4. В директории ```resources``` создайте окружение формата
+  ```
+  app.name
+  app.version
+  app.author
+  
+  env.type
+  
+  mongo.connect.local
+  mongo.connect.cluster
+  
+  sql.connect
+  sql.user
+  sql.password
+  ```
+5. Соберите проект с использованием Maven
    ```bash
    mvn clean package
    ```
@@ -42,64 +57,65 @@
 ### Основные команды
 - **Помощь**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -h
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -h
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --help
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --help
   ```
 - **Узнать версию**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -V
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -V
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --version
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --version
   ```
 - **Обновление базы данных**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -r
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -r [-c]
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --refresh-db
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --refresh-db [--cluster]
   ```
 - **Получение информации о герое**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -hr [HeroName]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -hr [HeroName] [-c]
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --hero [HeroName]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --hero [HeroName] [--cluster]
   ```
 - **Получение информации о патче**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -pt [PatchName]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -pt [PatchName] [-c]
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --patch [PatchName]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --patch [PatchName] [--cluster]
   ```
+-c или --cluster используют MongoDB на кластере. По умолчанию на локальной системе.
 - **Получение информации об игроке**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -p [PlayerID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -p [PlayerID]
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --player [PlayerID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --player [PlayerID]
   ```
 - **Удаление информации об игроке**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -pd [PlayerID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -pd [PlayerID]
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --player-dell [PlayerID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --player-dell [PlayerID]
   ```
 - **Получение информации о матче**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -m [MatchID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -m [MatchID]
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --match [MatchID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --match [MatchID]
   ```
 - **Удаление информации о матче**:
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar -md [MatchID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar -md [MatchID]
   ```
   ```bash
-  java -jar .\target\DotaTracker-1.0-jar-with-dependencies.jar --match-dell [MatchID]
+  java -jar DotaTracker-1.0-jar-with-dependencies.jar --match-dell [MatchID]
   ```

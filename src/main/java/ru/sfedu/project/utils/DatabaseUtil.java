@@ -1,14 +1,13 @@
 package ru.sfedu.project.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static ru.sfedu.project.Constants.log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import ru.sfedu.project.Constants;
 import ru.sfedu.project.HistoryContent;
 import ru.sfedu.project.entities.HistoryEntity;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,7 +16,6 @@ import java.net.URI;
 import java.net.URL;
 
 public class DatabaseUtil {
-    private static final Logger log = LogManager.getLogger(DatabaseUtil.class);
     private static final DataCsvProviderUtil csvUtil = new DataCsvProviderUtil();
     private static final DataXmlProviderUtil xmlUtil = new DataXmlProviderUtil();
 
@@ -59,7 +57,7 @@ public class DatabaseUtil {
         return new JSONArray(new JSONTokener(in));
     }
 
-    public static void save(HistoryEntity entity) throws Exception {
+    public static void save(HistoryEntity entity) {
         HistoryContent.saveHistory(entity);
         csvUtil.saveRecord(entity);
         xmlUtil.saveRecord(entity);

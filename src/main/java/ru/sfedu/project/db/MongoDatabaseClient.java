@@ -15,7 +15,6 @@ import ru.sfedu.project.Constants;
 import ru.sfedu.project.entities.HistoryEntity;
 import ru.sfedu.project.utils.DatabaseUtil;
 import java.io.IOException;
-import java.util.Date;
 import static com.mongodb.client.model.Filters.eq;
 
 public class MongoDatabaseClient {
@@ -25,10 +24,15 @@ public class MongoDatabaseClient {
         Configurator.setLevel("org.mongodb", org.apache.logging.log4j.Level.OFF);
     }
 
-    public static MongoDatabase getDatabase() throws IOException {
+    public static MongoDatabase getDatabase(boolean cluster) {
         if (database == null) {
             try {
-                String uri = util.getConfigurationEntry(Constants.PARAMS[4]);
+                String uri;
+                if (!cluster)
+                    uri = util.getConfigurationEntry(Constants.PARAMS[4]);
+                else
+                    uri = util.getConfigurationEntry(Constants.PARAMS[5]);
+
                 MongoClient mongoClient = MongoClients.create(uri);
                 database = mongoClient.getDatabase(Constants.MONGO_DB_NAME);
             } catch (Exception e) {
@@ -41,18 +45,11 @@ public class MongoDatabaseClient {
     }
 
     public static MongoCollection<Document> getCollection(String collectionName) throws IOException {
-        return getDatabase().getCollection(collectionName);
+        return getDatabase(false).getCollection(collectionName);
     }
 
-    public static void putHeroes() throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "MongoDatabaseClient",
-                "putHeroes()",
-                "Saved all heroes",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    public static void putHeroes() {
+        HistoryEntity historyEntity = HistoryEntity.init("MongoDatabaseClient", "putHeroes()", "Saved all heroes");
 
         try {
             JSONObject heroesJson = DatabaseUtil.getJsonObj(Constants.API_CONSTANTS_HEROES);
@@ -87,15 +84,8 @@ public class MongoDatabaseClient {
         return res != null ? res : new Document();
     }
 
-    public static void putPatches() throws Exception {
-        HistoryEntity historyEntity = new HistoryEntity(
-                new Date(),
-                "MongoDatabaseClient",
-                "putPatches()",
-                "Saved all patches",
-                HistoryEntity.Status.SUCCESS,
-                Constants.ACTOR_SYSTEM
-        );
+    public static void putPatches() {
+        HistoryEntity historyEntity = HistoryEntity.init("MongoDatabaseClient", "putPatches()", "Saved all patches");
 
         try {
             JSONArray patchJsonArr = DatabaseUtil.getJsonArr(Constants.API_CONSTANTS_PATCHES);

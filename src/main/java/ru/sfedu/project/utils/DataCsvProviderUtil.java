@@ -2,11 +2,10 @@ package ru.sfedu.project.utils;
 
 import ru.sfedu.project.entities.HistoryEntity;
 import ru.sfedu.project.interfaces.IDataProvider;
+import static ru.sfedu.project.Constants.log;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 import java.io.*;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.Objects;
 
 public class DataCsvProviderUtil implements IDataProvider<HistoryEntity> {
     private String recordPath;
-    private static final Logger log = LogManager.getLogger(DataCsvProviderUtil.class);
 
     @Override
     public void initDataSource(String recordPath) throws IOException, IllegalArgumentException {

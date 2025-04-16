@@ -2,9 +2,8 @@ package ru.sfedu.project;
 
 import ru.sfedu.project.db.MongoDatabaseClient;
 import ru.sfedu.project.entities.HistoryEntity;
+import static ru.sfedu.project.Constants.log;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -16,7 +15,6 @@ import static com.mongodb.client.model.Filters.eq;
 public class HistoryContent {
     private static final MongoCollection<Document> historyCollection;
     static Document historyDoc = new Document();
-    private static final Logger log = LogManager.getLogger(HistoryContent.class);
 
     static {
         try {
